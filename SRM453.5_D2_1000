@@ -1,0 +1,81 @@
+// Applied 3D Dp.
+// DP[i][j][0] denotes min product if i take ith element and total j elements till now.
+// DP[i][j][1] denotes max product if i take ith element and total j elements till now.
+
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define ll long long 
+
+class TheProduct
+{
+    public:
+    long long maxProduct(vector < int > a,int k , int maxd)
+    {
+        ll dp[100][100][2]={0};
+        
+        ll maxi=1000000000000000000,mini=-1000000000000000000;
+        
+        for(int i=1;i<=a.size();i++)
+        {
+            for(int j=1;j<=a.size();j++)
+            {
+                dp[i][j][0]=mini;
+                dp[i][j][1]=maxi;
+            }
+        }
+        
+        for(int i=1;i<=a.size();i++)
+            dp[i][1][0]=dp[i][1][1]=a[i-1];
+        
+        for(int le=2;le<=k;le++)
+        {
+ 
+            for(int i=le;i<=a.size();i++)
+            {
+                for(int j=i-1;j>=1;j--)
+                {
+                    if(i-j>maxd)
+                        break;
+                    
+                    if(dp[j][le-1][0]!=mini)
+                    {
+                        dp[i][le][0]=max(dp[i][le][0],dp[j][le-1][0]*a[i-1]);
+                        dp[i][le][1]=min(dp[i][le][1],dp[j][le-1][0]*a[i-1]);
+                    }
+                    if(dp[j][le-1][1]!=maxi)
+                    {
+                        dp[i][le][1]=min(dp[i][le][1],dp[j][le-1][1]*a[i-1]);
+                        dp[i][le][0]=max(dp[i][le][0],dp[j][le-1][1]*a[i-1]);
+                    }
+                }
+            } 
+        }
+        ll mini1=mini;
+           for(int i=1;i<=a.size();i++)
+           {
+               if(dp[i][k][0]!=mini)
+            mini1=max(mini1,dp[i][k][0]);
+               if(dp[i][k][1]!=maxi)
+            mini1=max(mini1,dp[i][k][1]);
+           }
+        return mini1;
+    }
+}; 
+
+int main()
+{
+    int n;
+    cin>>n;
+    vector < int > a(n);
+    
+    for(int i=0;i<n;i++)
+        cin>>a[i]; 
+
+    int k,d;
+    cin>>k>>d;
+    TheProduct me;
+    cout<<me.maxProduct(a,k,d);
+}
+
