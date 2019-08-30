@@ -1,0 +1,105 @@
+#include <bits/stdc++.h>
+using namespace std;
+class PalindromfulString 
+{
+public:
+long long ans[5000];
+vector < long long > a[25];
+long long vis[5000];
+
+
+void dfs(int n)
+{
+    vis[n] = 1;
+    for(int i=0;i<a[n].size();i++)
+    {
+        if(vis[a[n][i]]==0)
+            dfs(a[n][i]);
+    }
+}
+long long check(long long cur, long long n, long long m)
+{
+    for(int i=0;i<25;i++)
+    {
+        a[i].clear();
+        vis[i]=0;
+    }   
+    long long temp = 1;
+    for(int i=0;i<n;i++)
+    {
+        if( (temp & cur) !=0 )
+        {
+            int r = i;
+            int l = i-m+1;
+            if(l < 0)
+                return 0;
+
+            while(l<r)
+            {
+                a[l].push_back(r);
+                a[r].push_back(l);
+                l++;
+                r--;
+            }
+        }
+        temp*=2;
+    }
+    long long ans = 1;
+    for(int i=0;i<n;i++)
+    {
+        if(vis[i]==0)
+        {
+            dfs(i);
+            ans*=26;
+        }
+    }
+    return ans;
+}
+
+long long count(int N, int M, int K)
+{
+    long long n = N, m = M, k = K;
+   // cin>>n>>m>>k;
+
+    long long  nmax = pow(2, n);
+    
+    for(int i=nmax-1;i>=0;i--)
+    {
+
+        long long temp = check(i, n, m);
+        if(temp==0)
+        {
+            ans[i]=0;
+            continue;
+        }
+        ans[i] = temp;
+
+
+        for(int j=nmax-1;j>i;j--)
+        {
+            if( (i&j) == i)
+            {
+                ans[i]-=ans[j];
+            }
+        }
+    }
+
+    long long foo = 0;
+    for(int i=0;i<nmax;i++)
+    {
+        int temp = i;
+        int count=0;
+        while(temp)
+        {
+            if(temp%2)
+                count++;
+            temp/=2; 
+        }
+        if(count >= k)
+            foo+=ans[i];
+    }
+
+
+    return foo;
+}
+};
